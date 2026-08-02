@@ -143,14 +143,4 @@ the system-call framework. This assignment adds:
 - Invalid accesses, protection faults, physical-memory exhaustion, and mapping
   failures terminate the current user process rather than attempting recovery.
 
-## 5. Submission Note
 
-Before creating the submission archive, remove generated files such as:
-
-```text
-*.o
-*.bin
-hd.img
-```
-
-Keep the complete source code, this README, and the final report PDF.
