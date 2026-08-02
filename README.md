@@ -17,31 +17,38 @@ malloc
 
 ## 1. Build and Run
 
-### Prerequisites
+This project should be built in a Linux-compatible environment. Windows users
+may use Windows Subsystem for Linux (WSL). The exact project path and package
+installation commands may vary depending on the local environment.
 
-The build environment requires:
+The following tools are required:
 
-- GNU Make;
-- NASM;
-- GCC/G++ with 32-bit x86 support;
-- GNU binutils;
-- QEMU with `qemu-system-i386`.
+- GNU Make
+- NASM
+- GCC/G++ with 32-bit x86 support
+- GNU binutils
+- QEMU (`qemu-system-i386`)
 
-### Commands
-
-From the assignment root directory:
+After configuring the required environment, open a terminal and enter the
+project's `starter/build` directory. For example:
 
 ```bash
-cd starter/build
+cd ~/projects/assignment2/starter/build
+```
+
+The path above is only an example and should be replaced with the actual local
+project path.
+
+Build and run the operating system using:
+
+```bash
 make clean
 make
 make run
 ```
 
-`make clean` is recommended whenever `SELECTED_TEST` is changed.
-
-The result is printed in the QEMU text-mode window.
-
+`make clean` is recommended after changing the selected test in
+`setup.cpp`. The execution result is displayed in the QEMU text-mode window.
 ## 2. Test Entry Points and Instructions
 
 All tests are defined in:
@@ -88,102 +95,6 @@ For example, to run the multi-page test:
    ```
 
 3. Check the QEMU output for the expected `PASS` message and heap statistics.
-
-### Expected Key Results
-
-#### Test 1: Allocation
-
-Expected key output:
-
-```text
-allocation verification: PASS
-reserved=0 resident=0
-blocks=1
-```
-
-The test allocates 16, 128, and 1000 bytes, together with an 8192-byte block.
-
-#### Test 2: Reuse and Fragmentation
-
-Expected key output:
-
-```text
-fragmentation skip: PASS
-coalescing reuse: PASS
-fragmentation data: PASS
-reserved=0 resident=0
-blocks=1
-```
-
-The aligned 304-byte request must skip the two separated 256-byte holes.
-After the middle block is freed, a 512-byte request must reuse the coalesced
-region beginning at the old address of `b`.
-
-#### Test 3: Lazy Allocation and First Access
-
-Before access, the expected state is:
-
-```text
-reserved=4 resident=0 faults=0
-```
-
-After writing the first byte:
-
-```text
-first-access continuation: PASS
-reserved=3 resident=1 faults=1
-```
-
-After cleanup:
-
-```text
-reserved=0 resident=0
-blocks=1
-```
-
-#### Test 4: Multi-page Data
-
-Expected key output:
-
-```text
-multi-page verification: PASS
-checksum=528 expected=528
-first=1 middle=16 last=32
-reserved=0 resident=32 faults=32
-```
-
-After `free`, the resident-page count must return to zero.
-
-#### Test 5: Edge Cases
-
-Expected key output:
-
-```text
-malloc(0)=0x0 expected=0x0
-free(nullptr) result=0 expected=0
-free(p+1) result=-1 expected=-1
-free(p) result=0 expected=0
-double free result=-1 expected=-1
-edge-case verification: PASS
-```
-
-#### Test 6: Invalid Access After Free
-
-This test must be run alone. Correct execution prints an invalid-access
-message and terminates the process in the page-fault path.
-
-The following line must **not** appear:
-
-```text
-ERROR: use-after-free was not rejected
-```
-
-#### Test 7: Process-exit Reclamation
-
-The test intentionally returns without calling `free`. Before exit, three
-heap pages should be resident. Exit cleanup should release the remaining user
-mappings and page-table resources, followed by destruction of the heap
-metadata.
 
 ## 3. Main Changes from Lab 5
 
